@@ -1,4 +1,4 @@
-import { ActiveGame, GameResult, Matchup } from "../tests/Scoreboard.test";
+import { ActiveGame, GameResult, Matchup } from "../types/game";
 
 export default class Scoreboard {
     private activeGames: ActiveGame[] = [];

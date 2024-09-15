@@ -1,21 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { GameResult, Matchup } from "../types/game";
 import Scoreboard from "../classes/Scoreboard";
-
-export interface Matchup {
-    homeTeam: string;
-    awayTeam: string;
-}
-
-export interface Score {
-    homeScore: number;
-    awayScore: number;
-}
-
-export interface GameResult extends Matchup, Score {}
-
-export interface ActiveGame extends GameResult {
-    startedAt: number;
-}
 
 const createGameResult = (
     homeTeam: string,
