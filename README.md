@@ -17,3 +17,11 @@ To start the development server, use the following command:
 ```bash
 yarn dev
 ```
+
+## Running Tests
+
+To run the test suite, use the following command:
+
+```bash
+yarn test
+```
