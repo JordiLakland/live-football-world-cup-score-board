@@ -63,6 +63,19 @@ export default class Scoreboard {
         );
     }
 
+    getGameResults(): GameResult[] {
+        const sortedActiveGames = [...this.activeGames].sort(
+            (a, b) => b.startedAt - a.startedAt
+        );
+
+        return sortedActiveGames.map(game => ({
+            homeTeam: game.homeTeam,
+            awayTeam: game.awayTeam,
+            homeScore: game.homeScore,
+            awayScore: game.awayScore,
+        }));
+    }
+
     private findGame(matchup: Matchup): ActiveGame | undefined {
         return this.activeGames.find(
             game =>
