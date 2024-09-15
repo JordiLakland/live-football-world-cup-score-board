@@ -4,21 +4,9 @@ export default class Scoreboard {
     private activeGames: ActiveGame[] = [];
 
     startGame(matchup: Matchup, startTime?: number): void {
-        if (matchup.homeTeam === "" || matchup.awayTeam === "") {
-            throw new Error("Team names cannot be empty");
-        }
+        this.validateMatchup(matchup);
 
-        if (matchup.homeTeam === matchup.awayTeam) {
-            throw new Error("Team names cannot be equal");
-        }
-
-        const gameInProgress = this.activeGames.some(
-            game =>
-                game.homeTeam === matchup.homeTeam &&
-                game.awayTeam === matchup.awayTeam
-        );
-
-        if (gameInProgress) {
+        if (this.isGameInProgress(matchup)) {
             throw new Error("The game is already in progress");
         }
 
@@ -33,15 +21,9 @@ export default class Scoreboard {
     }
 
     updateScore(gameResult: GameResult): void {
-        if (gameResult.homeScore < 0 || gameResult.awayScore < 0) {
-            throw new Error("The score cannot be negative");
-        }
+        this.validateScores(gameResult.homeScore, gameResult.awayScore);
 
-        const gameToUpdate = this.activeGames.find(
-            game =>
-                game.homeTeam === gameResult.homeTeam &&
-                game.awayTeam === gameResult.awayTeam
-        );
+        const gameToUpdate = this.findGame(gameResult);
 
         if (!gameToUpdate) {
             throw new Error("The game does not exist");
@@ -52,11 +34,7 @@ export default class Scoreboard {
     }
 
     finishGame(matchup: Matchup): void {
-        const gameToFinish = this.activeGames.find(
-            game =>
-                game.homeTeam === matchup.homeTeam &&
-                game.awayTeam === matchup.awayTeam
-        );
+        const gameToFinish = this.findGame(matchup);
 
         if (!gameToFinish) {
             throw new Error("The game does not exist");
@@ -83,5 +61,33 @@ export default class Scoreboard {
             game =>
                 `${game.homeTeam} ${game.homeScore} - ${game.awayTeam} ${game.awayScore}`
         );
+    }
+
+    private findGame(matchup: Matchup): ActiveGame | undefined {
+        return this.activeGames.find(
+            game =>
+                game.homeTeam === matchup.homeTeam &&
+                game.awayTeam === matchup.awayTeam
+        );
+    }
+
+    private isGameInProgress(matchup: Matchup): boolean {
+        return !!this.findGame(matchup);
+    }
+
+    private validateMatchup(matchup: Matchup): void {
+        if (matchup.homeTeam === "" || matchup.awayTeam === "") {
+            throw new Error("Team names cannot be empty");
+        }
+
+        if (matchup.homeTeam === matchup.awayTeam) {
+            throw new Error("Team names cannot be equal");
+        }
+    }
+
+    private validateScores(homeScore: number, awayScore: number): void {
+        if (homeScore < 0 || awayScore < 0) {
+            throw new Error("The score cannot be negative");
+        }
     }
 }
