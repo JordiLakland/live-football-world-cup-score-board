@@ -38,7 +38,7 @@ export default function ScoreboardView() {
                 onUpdateScore={handleUpdateScore}
                 onFinishGame={handleFinishGame}
             />
-            <Summary />
+            <Summary summary={scoreboard.getSummary()} />
         </div>
     );
 }
