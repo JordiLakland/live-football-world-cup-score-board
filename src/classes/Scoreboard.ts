@@ -4,6 +4,24 @@ export default class Scoreboard {
     private activeGames: ActiveGame[] = [];
 
     startGame(matchup: Matchup, startTime?: number): void {
+        if (matchup.homeTeam === "" || matchup.awayTeam === "") {
+            throw new Error("Team names cannot be empty");
+        }
+
+        if (matchup.homeTeam === matchup.awayTeam) {
+            throw new Error("Team names cannot be equal");
+        }
+
+        const gameInProgress = this.activeGames.some(
+            game =>
+                game.homeTeam === matchup.homeTeam &&
+                game.awayTeam === matchup.awayTeam
+        );
+
+        if (gameInProgress) {
+            throw new Error("The game is already in progress");
+        }
+
         const activeGame: ActiveGame = {
             ...matchup,
             homeScore: 0,
@@ -15,23 +33,37 @@ export default class Scoreboard {
     }
 
     updateScore(gameResult: GameResult): void {
+        if (gameResult.homeScore < 0 || gameResult.awayScore < 0) {
+            throw new Error("The score cannot be negative");
+        }
+
         const gameToUpdate = this.activeGames.find(
             game =>
                 game.homeTeam === gameResult.homeTeam &&
                 game.awayTeam === gameResult.awayTeam
         );
 
-        if (gameToUpdate) {
-            gameToUpdate.homeScore = gameResult.homeScore;
-            gameToUpdate.awayScore = gameResult.awayScore;
+        if (!gameToUpdate) {
+            throw new Error("The game does not exist");
         }
+
+        gameToUpdate.homeScore = gameResult.homeScore;
+        gameToUpdate.awayScore = gameResult.awayScore;
     }
 
     finishGame(matchup: Matchup): void {
-        this.activeGames = this.activeGames.filter(
+        const gameToFinish = this.activeGames.find(
             game =>
-                game.homeTeam !== matchup.homeTeam &&
-                game.awayTeam !== matchup.awayTeam
+                game.homeTeam === matchup.homeTeam &&
+                game.awayTeam === matchup.awayTeam
+        );
+
+        if (!gameToFinish) {
+            throw new Error("The game does not exist");
+        }
+
+        this.activeGames = this.activeGames.filter(
+            game => game !== gameToFinish
         );
     }
 
