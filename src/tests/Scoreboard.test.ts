@@ -145,4 +145,102 @@ describe("Scoreboard", () => {
 
         expect(summary).toEqual(expectedSummary);
     });
+
+    it("should not start a game with empty team names", () => {
+        const emptyMatchup: Matchup = {
+            homeTeam: "",
+            awayTeam: "",
+        };
+        expect(() => scoreboard.startGame(emptyMatchup)).toThrowError(
+            "Team names cannot be empty"
+        );
+
+        const emptyAwayMatchup: Matchup = {
+            homeTeam: "Argentina",
+            awayTeam: "",
+        };
+        expect(() => scoreboard.startGame(emptyAwayMatchup)).toThrowError(
+            "Team names cannot be empty"
+        );
+
+        const emptyHomeMatchup: Matchup = {
+            homeTeam: "",
+            awayTeam: "Australia",
+        };
+        expect(() => scoreboard.startGame(emptyHomeMatchup)).toThrowError(
+            "Team names cannot be empty"
+        );
+    });
+
+    it("should not start a game with duplicate team names", () => {
+        const duplicateMatchup: Matchup = {
+            homeTeam: "Argentina",
+            awayTeam: "Argentina",
+        };
+        expect(() => scoreboard.startGame(duplicateMatchup)).toThrowError(
+            "Team names cannot be equal"
+        );
+    });
+
+    it("should not start a game that is already in progress", () => {
+        const matchup: Matchup = {
+            homeTeam: "Argentina",
+            awayTeam: "Australia",
+        };
+        scoreboard.startGame(matchup);
+
+        expect(() => scoreboard.startGame(matchup)).toThrowError(
+            "The game is already in progress"
+        );
+    });
+
+    it("should not update the score of a game that does not exist", () => {
+        const gameResult: GameResult = createGameResult(
+            "Argentina",
+            "Australia",
+            3,
+            1
+        );
+        expect(() => scoreboard.updateScore(gameResult)).toThrowError(
+            "The game does not exist"
+        );
+    });
+
+    it("should not update the score with negative values", () => {
+        const matchup: Matchup = {
+            homeTeam: "Argentina",
+            awayTeam: "Australia",
+        };
+        scoreboard.startGame(matchup);
+
+        const homeNegativeGameResult: GameResult = createGameResult(
+            "Argentina",
+            "Australia",
+            -3,
+            1
+        );
+        expect(() =>
+            scoreboard.updateScore(homeNegativeGameResult)
+        ).toThrowError("The score cannot be negative");
+
+        const awayNegativeGameResult: GameResult = createGameResult(
+            "Argentina",
+            "Australia",
+            3,
+            -1
+        );
+        expect(() =>
+            scoreboard.updateScore(awayNegativeGameResult)
+        ).toThrowError("The score cannot be negative");
+    });
+
+    it("should not finish a game that does not exist", () => {
+        const matchup: Matchup = {
+            homeTeam: "Argentina",
+            awayTeam: "Australia",
+        };
+        expect(() => scoreboard.finishGame(matchup)).toThrowError(
+            "The game does not exist"
+        );
+    });
 });
